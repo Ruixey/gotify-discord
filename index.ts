@@ -3,6 +3,7 @@ import WebSocket from "ws";
 const GOTIFY_HOST = process.env.GOTIFY_HOST || "localhost";
 const GOTIFY_TOKEN = process.env.GOTIFY_TOKEN;
 const DISCORD_WEBHOOK = process.env.DISCORD_WEBHOOK;
+const SECURE = /^(true|1|yes)$/i.test(process.env.SECURE || "");
 
 if (GOTIFY_TOKEN === undefined) {
   throw new Error("GOTIFY_TOKEN is required");
@@ -14,11 +15,11 @@ if (DISCORD_WEBHOOK === undefined) {
 
 const transformMessage = (message: string) => {
   const json = JSON.parse(message);
-  return `_from gotify:_\n# ${json.title}\n${json.message}`;
+  return `${json.title}\n${json.message}`;
 };
 
 const runServer = (): void => {
-  const ws = new WebSocket(`ws://${GOTIFY_HOST}/stream`, {
+  const ws = new WebSocket(`${SECURE ? "wss" : "ws"}://${GOTIFY_HOST}/stream`, {
     headers: { "X-Gotify-Key": GOTIFY_TOKEN },
   });
 
