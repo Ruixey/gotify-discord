@@ -31,5 +31,4 @@ services:
 ## Build it yourself
 
 1. Clone repo
-2. Run `yarn build`
-3. Run `yarn start`
+2. Run `deno task dev`
