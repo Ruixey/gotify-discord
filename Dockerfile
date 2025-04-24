@@ -1,16 +1,11 @@
-FROM node:slim
-
-ENV NODE_ENV=production
-
+# Build stage
+FROM denoland/deno:alpine as builder
 WORKDIR /app
-
-COPY package.json ./
-COPY yarn.lock ./
-
-RUN yarn --immutable
-RUN npm install typescript -g
-
 COPY . .
+RUN deno cache main.ts
 
-RUN tsc
-CMD ["node", "dist/index.js"]
+# Production stage
+FROM denoland/deno:alpine
+WORKDIR /app
+COPY --from=builder /app .
+CMD ["deno", "run", "--allow-net", "--allow-env", "--allow-read", "src/main.ts"]
